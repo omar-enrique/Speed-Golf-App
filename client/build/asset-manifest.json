@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/sp20-ia6-omar-enrique/static/css/main.0c762a90.chunk.css",
+    "main.js": "/sp20-ia6-omar-enrique/static/js/main.9585cba5.chunk.js",
+    "main.js.map": "/sp20-ia6-omar-enrique/static/js/main.9585cba5.chunk.js.map",
+    "runtime-main.js": "/sp20-ia6-omar-enrique/static/js/runtime-main.97b3a927.js",
+    "runtime-main.js.map": "/sp20-ia6-omar-enrique/static/js/runtime-main.97b3a927.js.map",
+    "static/css/2.468f1258.chunk.css": "/sp20-ia6-omar-enrique/static/css/2.468f1258.chunk.css",
+    "static/js/2.9b9d51b8.chunk.js": "/sp20-ia6-omar-enrique/static/js/2.9b9d51b8.chunk.js",
+    "static/js/2.9b9d51b8.chunk.js.map": "/sp20-ia6-omar-enrique/static/js/2.9b9d51b8.chunk.js.map",
+    "index.html": "/sp20-ia6-omar-enrique/index.html",
+    "precache-manifest.2e803ecfb68743051ceefb208fe4bb28.js": "/sp20-ia6-omar-enrique/precache-manifest.2e803ecfb68743051ceefb208fe4bb28.js",
+    "service-worker.js": "/sp20-ia6-omar-enrique/service-worker.js",
+    "static/css/2.468f1258.chunk.css.map": "/sp20-ia6-omar-enrique/static/css/2.468f1258.chunk.css.map",
+    "static/css/main.0c762a90.chunk.css.map": "/sp20-ia6-omar-enrique/static/css/main.0c762a90.chunk.css.map",
+    "static/js/2.9b9d51b8.chunk.js.LICENSE.txt": "/sp20-ia6-omar-enrique/static/js/2.9b9d51b8.chunk.js.LICENSE.txt",
+    "static/media/font-awesome.min.css": "/sp20-ia6-omar-enrique/static/media/fontawesome-webfont.fee66e71.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.97b3a927.js",
+    "static/css/2.468f1258.chunk.css",
+    "static/js/2.9b9d51b8.chunk.js",
+    "static/css/main.0c762a90.chunk.css",
+    "static/js/main.9585cba5.chunk.js"
+  ]
+}
