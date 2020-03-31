@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import './styles/main.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
+import 'bootstrap-social/bootstrap-social.css';
 
 import AppMode from './AppMode';
 
@@ -33,8 +34,52 @@ modeToPage[AppMode.EDIT_DATA] = DataPage;
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {mode: AppMode.LOGIN, menuOpen: false, userId: "", showAbout: false};
+        this.state = {mode: AppMode.LOGIN, menuOpen: false, showAbout: false, authenticated: false, user: {}};
     }
+
+    componentDidMount() {
+        window.addEventListener("click",this.handleClick);
+        if (!this.state.authenticated) { 
+            //Use /auth/test route to re-test authentication and obtain user data
+            fetch("/auth/test")
+                .then((response) => response.json())
+                .then((obj) => {
+                    if (obj.isAuthenticated) {
+                        let data = JSON.parse(localStorage.getItem("speedgolfUserData"));
+                        if (data == null) {
+                            data = {}; //create empty database (localStorage)
+                        }
+                        if (!data.hasOwnProperty(obj.user.id)) {
+                            //create new user with this id in database (localStorage)
+                            data[obj.user.id] = {
+                                accountInfo: {
+                                    provider: obj.user.provider,
+                                    password: '',
+                                    securityQuestion: '',
+                                    securityAnswer: ''
+                                },
+                                rounds: {}, 
+                                roundCount: 0
+                            };
+                            //Commit to localStorage:
+                            localStorage.setItem("speedgolfUserData",JSON.stringify(data));
+                        } 
+                        
+                        //Update current user
+                        this.setState({
+                            authenticated: true,
+                            user: obj.user,
+                            mode: AppMode.TABLE //We're authenticated so can get into the app.
+                        });
+                    }
+                })
+        }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("click",this.handleClick);
+    }
+
     handleChangeMode = (newMode) => {
         this.setState({mode: newMode});
     }
@@ -65,10 +110,13 @@ class App extends React.Component {
         event.stopPropagation();
     }
 
-    componentDidMount() {
+    setUser = (userObj) => {
+        this.setState({user: userObj});
     }
-
-    componentWillUnmount() {
+    
+    //setAuthenticated -- Given auth (true or false), update authentication state.
+    setAuthenticated = (auth) => {
+        this.setState({authenticated: auth});
     }
 
     toggleAbout = () => {
@@ -143,7 +191,8 @@ class App extends React.Component {
                 <SideMenu mode={this.state.mode}
                     menuOpen={this.state.menuOpen}
                     changeMode={this.handleChangeMode}
-                    showAbout={this.toggleAbout}/>
+                    showAbout={this.toggleAbout}
+                    user={this.state.user}/>
                 <ModeBar mode={this.state.mode}
                     changeMode={this.handleChangeMode}
                     menuOpen={this.state.menuOpen}
@@ -152,9 +201,7 @@ class App extends React.Component {
                     mode={this.state.mode} 
                     menuOpen={this.state.menuOpen}
                     changeMode={this.handleChangeMode}
-                    setUserId={this.setUserId}
-                    userId={this.state.userId}/>
-
+                    user={this.state.user}/>
                 {this.state.showAbout ? this.renderAbout() : null}
             </div>
         );

@@ -7,8 +7,28 @@ export default class LoginPage extends React.Component {
         this.emailInputRef = React.createRef();
         this.passwordInputRef = React.createRef();
 
-        this.state = {loginBtnIcon: "fa fa-sign-in",
-                      loginBtnLabel: "Log In"}
+        this.state = {  
+                        loginBtnIcon: "fa fa-sign-in",
+                        loginBtnLabel: "Log In",
+                        githubIcon: "fa fa-github",
+                        githubLabel: "Sign in with GitHub"
+                    }
+    }
+
+    //handleOAuthLogin -- Callback function that initiates contact with OAuth
+    //provider
+
+    handleOAuthLogin = (provider) => {
+        window.open(`/auth/${provider}`,"_self");
+    }
+        
+    //handleOAuthLoginClick -- Called whent the user clicks on button to
+    //authenticate via a third-party OAuth service. The name of the provider is
+    //passed in as a parameter.
+    handleOAuthLoginClick = (provider) => {
+        this.setState({[provider + "Icon"] : "fa fa-spin fa-spinner",
+        [provider + "Label"] : "Connecting..."});
+        setTimeout(() => this.handleOAuthLogin(provider),0);
     }
 
     handleLogin = () => {
@@ -76,12 +96,11 @@ export default class LoginPage extends React.Component {
                                 &nbsp;{this.state.loginBtnLabel}
                         </button>
                         <br />
-                        <a role="button" className="login-btn">
-                            <img src="https://drive.google.com/uc?export=view&id=1YXRuG0pCtsfvbDSTzuM2PepJdbBpjEut" />
-                        </a>
-                        <a role="button" className="login-btn">
-                            <img src="https://drive.google.com/uc?export=view&id=1ZoySWomjxiCnC_R4n9CZWxd_qXzY1IeL" />
-                        </a>
+                        <button type="button" className="btn btn-github"
+                            onClick={() => this.handleOAuthLoginClick("github")}>
+                            <span className={this.state.githubIcon}></span>&nbsp;
+                            {this.state.githubLabel}
+                        </button>
                         <p>
                             <i>Version CptS 489 Sp20</i>
                         </p>
