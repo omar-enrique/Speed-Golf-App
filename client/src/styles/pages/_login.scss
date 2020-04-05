@@ -1,0 +1,198 @@
+.login-page {
+	position:relative;
+    height: 100vh;
+    background: url("/golfer_background.svg");
+    background-repeat: no-repeat !important;
+    @include respond (phone) {
+        background-size: cover;
+        background: url("/mobile_background.svg");
+    }
+}
+
+.golfer {
+	position: absolute;
+	left: 0;
+	top: 0;
+    height: 100%;
+    
+    @include respond(phone) {
+        display:none;
+    }
+}
+
+.mobile-background {
+    position:relative;
+    width: 100%;
+    display: none;
+
+    @include respond(phone) {
+        display: block;
+    }
+}
+
+.login-form {
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 20%;
+    display: flex;
+    flex-direction: column;
+
+    transition: all 0.3s;
+
+    @include respond(phone) {
+        position: relative;
+
+        top: 100px !important;
+        right: initial !important;
+
+        transform: initial !important;
+
+        margin-left: auto;
+        margin-right: auto;
+        width:80%;
+    }
+
+    .speedgolf-logo {
+        margin-left: auto;
+        margin-right: auto;
+        height: 80px;
+    }
+
+    .form-heading {
+        margin-top: 10px;
+        font-family: $primary-font;
+        color: #252525;
+        font-size: 36px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .login-interface {
+        position: relative;
+        max-width: 600px;
+        min-width: 400px;
+
+        @include respond (phone) {
+            min-width: initial;
+            max-width: 100%;
+        }
+        .input-text {
+            position: relative;
+
+            input {
+                padding-left: 0;
+                padding-right: 0;
+                border: 0 !important;
+                
+                &:focus, &:active {
+                    outline: none !important;
+                    box-shadow: none;
+                    &::placeholder {
+                        color: $primary-color;
+                    }
+                    color: $primary-color;
+                }
+            }
+
+            &:before {
+                content: ' ';
+                z-index: 1;
+                position: absolute;
+                bottom: 1px;
+                left: 0;
+                background-color: #ced4da;
+                height:1px;
+                width: 100%;
+                border-radius: 1px;
+            }
+            &:after {
+                content: ' ';
+                z-index: 2;
+                position: absolute;
+                bottom: 1px;
+                left: 0;
+                background-color: $primary-color;
+                height:2px;
+                border-radius: 1px;
+                width: 0;
+                transition: all .2s;
+
+            }
+
+            &:focus-within {
+                &:after {
+                    width:100%;
+                }
+            }
+        }
+
+        .forgot-password {
+            color: $primary-color;
+            font-family: $primary-font;
+            font-size: 14px;
+            display: block;
+
+            margin: 10px 0 10px 0;
+
+            float: right;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            &:hover, &:active{
+                color: $primary-color-dark;
+            }
+        }
+
+        .login-btn {
+            position: relative;
+            border-radius: 50px;
+            background-color: $primary-color;
+            font-family: $primary-font;
+            font-size: 24px;
+
+            border: 0;
+
+            &:focus, &:active {
+                outline: none !important;
+                box-shadow: none;
+            }
+        }
+
+        .clear-btn {
+            color: $primary-color;
+            font-size: 20px;
+            font-weight: bold;
+            display:block;
+
+            margin: 10px 0 10px 0;
+
+            text-align: center;
+            
+            cursor: pointer;
+
+        }
+    }
+}
+
+.login-state {
+    opacity: 0;
+    right: 0;
+
+    @include respond(phone) {
+        opacity: 0;
+        display: none;
+    }
+}
+
+.create-state{
+    opacity: 0;
+    transform: translate(-600px,-50%);
+    @include respond(phone) {
+        opacity: 0;
+        display:none;
+    }
+}
