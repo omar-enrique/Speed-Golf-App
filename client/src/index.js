@@ -192,7 +192,8 @@ class App extends React.Component {
                     menuOpen={this.state.menuOpen}
                     changeMode={this.handleChangeMode}
                     showAbout={this.toggleAbout}
-                    user={this.state.user}/>
+                    user={this.state.user}
+                    setUser={this.setUser}/>
                 <ModeBar mode={this.state.mode}
                     changeMode={this.handleChangeMode}
                     menuOpen={this.state.menuOpen}

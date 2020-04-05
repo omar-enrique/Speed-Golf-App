@@ -52,6 +52,15 @@ export default class SideMenu extends React.Component {
         }
     }
 
+    handleLogOut = () => {
+        console.log('Hello');
+        
+        fetch('/auth/logout').then(res => {
+            this.props.setUser("");
+            this.props.changeMode(AppMode.LOGIN);
+        });
+    }
+
     render () {
         return (
         <div className= {"sidemenu " +
@@ -68,7 +77,7 @@ export default class SideMenu extends React.Component {
             <a className="sidemenu-item" onClick={this.props.showAbout}>
                 <span className="fa fa-info-circle"></span>&nbsp;About</a>
 
-            <a className="sidemenu-item" onClick={() => this.props.changeMode(AppMode.LOGIN)}>
+            <a className="sidemenu-item" onClick={this.handleLogOut}>
                 <span className="fa fa-sign-out"></span>&nbsp;Log Out</a>
         </div>
         );
