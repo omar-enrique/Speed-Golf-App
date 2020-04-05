@@ -210,6 +210,10 @@ export default class LoginPage extends React.Component {
         });
     }
 
+    forgotPassword = () => {
+        alert('Sorry! In the interest of time, this will remain unimplemented for now.');
+    }
+
     render() {
         return (
                 <div id="login-mode-div" className="login-page">
@@ -227,7 +231,7 @@ export default class LoginPage extends React.Component {
                             <div className="input-text">
                                 <input className="form-control" ref={this.passwordInputRef} type="password" placeholder="Enter Password" pattern="[A-Za-z0-9!@#$%^&*()_+\-]+" required={true} />
                             </div>
-                            <span className="forgot-password">Forgot Password?</span>
+                            <span className="forgot-password" onClick={this.forgotPassword}>Forgot Password?</span>
                             <button type="submit" className="btn-color-theme btn btn-primary btn-block login-btn">
                                 <span className={this.state.loginBtnIcon}/>
                                     &nbsp;{this.state.loginBtnLabel}

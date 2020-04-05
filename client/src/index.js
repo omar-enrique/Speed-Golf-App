@@ -17,8 +17,6 @@ import LoginPage from './pages/LoginPage';
 import AddDataPage from './pages/AddDataPage';
 import DataPage from './pages/Data';
 
-// import RoundForm from './RoundForm';
-
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Welcome to SpeedScore";
 modeTitle[AppMode.TABLE] = "Data Table Page";
@@ -40,17 +38,15 @@ class App extends React.Component {
     componentDidMount() {
         window.addEventListener("click",this.handleClick);
         if (!this.state.authenticated) { 
-            //Use /auth/test route to re-test authentication and obtain user data
             fetch("/auth/test")
                 .then((response) => response.json())
                 .then((obj) => {
                     if (obj.isAuthenticated) {
                         let data = JSON.parse(localStorage.getItem("speedgolfUserData"));
                         if (data == null) {
-                            data = {}; //create empty database (localStorage)
+                            data = {};
                         }
                         if (!data.hasOwnProperty(obj.user.id)) {
-                            //create new user with this id in database (localStorage)
                             data[obj.user.id] = {
                                 accountInfo: {
                                     provider: obj.user.provider,
@@ -61,15 +57,15 @@ class App extends React.Component {
                                 rounds: {}, 
                                 roundCount: 0
                             };
-                            //Commit to localStorage:
                             localStorage.setItem("speedgolfUserData",JSON.stringify(data));
-                        } 
+                        }
+
+                        console.log('USER: ', obj.user);
                         
-                        //Update current user
                         this.setState({
                             authenticated: true,
                             user: obj.user,
-                            mode: AppMode.TABLE //We're authenticated so can get into the app.
+                            mode: AppMode.TABLE
                         });
                     }
                 })
@@ -114,7 +110,6 @@ class App extends React.Component {
         this.setState({user: userObj});
     }
     
-    //setAuthenticated -- Given auth (true or false), update authentication state.
     setAuthenticated = (auth) => {
         this.setState({authenticated: auth});
     }

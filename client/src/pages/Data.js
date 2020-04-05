@@ -6,52 +6,98 @@ import FloatingButton from '../components/FloatingButton';
 
 export default class DataPage extends React.Component {
     constructor(props) {
-        super(props);
-        let data = JSON.parse(localStorage.getItem("speedgolfUserData")); 
-        console.log(this.props.user.id);
-        this.state = {
-			rounds: data[this.props.user.id].rounds,
-			roundCount: data[this.props.user.id].roundCount,
+		super(props);
+		this.state = {
+			rounds: [],
+			roundCount: 0,
 			deleteId: "",
 			editId: ""
-		};     
-    }
+		};
+		this.fetchRounds();
 
-    addRound = (newData) => {
-        console.log('ADD ROUND', newData);
-        let data = JSON.parse(localStorage.getItem("speedgolfUserData"));
-        let newRounds = this.state.rounds;
-        newData.roundNum = this.state.roundCount + 1;
-        newRounds[this.state.roundCount + 1] = newData;
-        data[this.props.user.id].rounds = newRounds;
-        data[this.props.user.id].roundCount = this.state.roundCount + 1;
-        localStorage.setItem("speedgolfUserData",JSON.stringify(data));
-        this.setState({rounds: newRounds, roundCount: newData.roundNum});
+        // let data = JSON.parse(localStorage.getItem("speedgolfUserData")); 
+        console.log(this.props.user.id);
+        
+	}
+	
+	fetchRounds = async () => {
+        let url = "/rounds/" + this.props.user.id;
+		let res = await fetch(url, {method: 'GET'});
+		let body = await res.json();
+		
+		let rounds = JSON.parse(body);
+
+		console.log('RESPONSE TO FETCH',res,body, rounds);
+
+        if (res.status != 200) {
+			alert('Failure to retrieve user data.')
+			return;
+		}
+
+		this.setState({
+			rounds: rounds,
+			roundCount: rounds.length,
+			deleteId: "",
+			editId: ""
+		});
+	}
+
+    addRound = async (newData) => {
+        const url = '/rounds/' + this.props.user.id;
+
+		const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            method: 'POST',
+            body: JSON.stringify(newData)
+		}); 
+		
+		let newRounds = this.state.rounds;
+
+		newRounds = newRounds.concat(newData);
+
+        this.setState({rounds: newRounds, roundCount: newRounds.length});
         this.props.changeMode(AppMode.TABLE);
     }
 
-    editRound = (newData) => {
-		let data = JSON.parse(localStorage.getItem("speedgolfUserData")); 
+    editRound = async (newData) => {
+		const url = '/rounds/' + this.props.user.id + '/' + this.state.rounds[this.state.editId]["_id"];
+
+		const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            method: 'PUT',
+            body: JSON.stringify(newData)
+		}); 
+		
 		let newRounds = this.state.rounds;
 		newRounds[this.state.editId] = newData;
-		data[this.props.user.id].rounds = newRounds;
-		localStorage.setItem("speedgolfUserData",JSON.stringify(data));
-		this.setState({rounds: newRounds, editId: ""});
-		this.props.changeMode(AppMode.TABLE);
+        this.setState({rounds: newRounds, roundCount: newRounds.length});
+        this.props.changeMode(AppMode.TABLE);
   	}
 
     setEditId = (val) => {
       	this.setState({editId: val});
     }
 
-    deleteRound = (id) => {
-		let data = JSON.parse(localStorage.getItem("speedgolfUserData"));
+    deleteRound = async (id) => {
+		const url = '/rounds/' + this.props.user.id + '/' + this.state.rounds[id]["_id"];
+
+		const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            method: 'DELETE'
+		}); 
+		
 		let newRounds = this.state.rounds;
 		delete newRounds[id];
-		data[this.props.user.id].rounds = newRounds;
-		data[this.props.user.id].roundCount = this.state.roundCount - 1;
-		localStorage.setItem("speedgolfUserData",JSON.stringify(data));
-		this.setState({rounds: newRounds, roundCount: (this.state.roundCount - 1)});
+		this.setState({rounds: newRounds, roundCount: newRounds.length});
     }
 
     render () {

@@ -11,6 +11,7 @@ export default class DataTablePage extends React.Component {
     //by the current user and providing buttons to view/edit and delete each round.
     renderTable = () => {
         let table = [];
+        console.log('Render Data Table', this.props.rounds);
         for (const r in this.props.rounds) {
             table.push(
                 <tr key={r}>

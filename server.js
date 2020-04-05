@@ -355,11 +355,12 @@ app.get('/rounds/:userId', async(req, res) => {
 	console.log("in /rounds route (GET) with userId = " + JSON.stringify(req.params.userId));
 	
 	try {
-		let thisUser = await User.findOne({id: req.params.userId});
+		let thisUser = await User.findOne({id: req.params.userId}).lean();;
 		if (!thisUser) {
 			return res.status(400).message("No user account with specified userId was found in database.");
 		} 
 		else {
+			console.log('Found this user!', thisUser);
 			return res.status(200).json(JSON.stringify(thisUser.rounds));
 		}
 	} catch (err) {
@@ -375,22 +376,26 @@ app.put('/rounds/:userId/:roundId', async (req, res, next) => {
 	const validProps = ['date', 'course', 'type', 'holes', 'strokes',
 	  'minutes', 'seconds', 'notes'];
 	let bodyObj = {...req.body};
+	delete bodyObj._id; //Not needed for update
+	delete bodyObj.SGS;
 	for (const bodyProp in bodyObj) {
 		if (!validProps.includes(bodyProp)) {
-			return res.status(400).send("rounds/ PUT request formulated incorrectly." +
-			"Only the following props are allowed in body: " +
-			"'date', 'course', 'type', 'holes', 'strokes'" +
+		return res.status(400).send("rounds/ PUT request formulated incorrectly." +
+			"It includes " + bodyProp + ". However, only the following props are allowed: " +
+			"'date', 'course', 'type', 'holes', 'strokes', " +
 			"'minutes', 'seconds', 'notes'");
 		} else {
-			bodyObj["rounds.$." + bodyProp] = bodyObj[bodyProp];
-			delete bodyObj[bodyProp];
+		bodyObj["rounds.$." + bodyProp] = bodyObj[bodyProp];
+		delete bodyObj[bodyProp];
 		}
 	}
+
+	//Add SGS to update object
 	try {
 		let status = await User.updateOne(
-			{"id": req.params.userId,
-			"rounds._id": mongoose.Types.ObjectId(req.params.roundId)}
-			,{"$set" : bodyObj}
+		{"id": req.params.userId,
+		"rounds._id": mongoose.Types.ObjectId(req.params.roundId)}
+		,{"$set" : bodyObj}
 		);
 		if (status.nModified != 1) { //Should never happen!
 			res.status(400).send("Unexpected error occurred when updating round in database. Round was not updated.");

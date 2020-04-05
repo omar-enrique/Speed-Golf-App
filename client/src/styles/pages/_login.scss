@@ -41,6 +41,12 @@
 
     .btn-github, .btn-facebook {
         width: 48%;
+
+        @include respond(phone) {
+            width:100%;
+        }
+        margin-bottom: 10px;
+
     }
 
     .btn-facebook { 

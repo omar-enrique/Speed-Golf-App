@@ -14,7 +14,7 @@ export default class AddDataPage extends React.Component {
                 holes: "18",
                 strokes: 80,
                 minutes: 50,
-                seconds: "00",
+                seconds: 0,
                 notes: "",
                 faIcon: "fa fa-save",
                 btnLabel: "Save Round Data"
