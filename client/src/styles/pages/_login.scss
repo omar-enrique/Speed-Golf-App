@@ -181,6 +181,7 @@
 .login-state {
     opacity: 0;
     right: 0;
+    pointer-events: none;
 
     @include respond(phone) {
         opacity: 0;
@@ -189,6 +190,7 @@
 }
 
 .create-state{
+    pointer-events: none;
     opacity: 0;
     transform: translate(-600px,-50%);
     @include respond(phone) {

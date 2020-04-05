@@ -94,24 +94,26 @@ export default class LoginPage extends React.Component {
 
     handleCreateAccount = async (event) => {
         event.preventDefault();
-        const url = '/user/' + this.state.accountName;
-        const loginInfo = {password: this.state.accountPassword,
-                           securityQuestion: this.state.accountSecurityQuestion,
-                           securityAnswer: this.state.accountSecurityAnswer};
+        const url = '/users/' + this.createUsernameRef.current.value;
+        const accountInfo = {password: this.createPasswordRef.current.value,
+                           securityQuestion: this.securityQuestionRef.current.value,
+                           securityAnswer: this.securityAnswerRef.current.value};
         const res = await fetch(url, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
             method: 'POST',
-            body: JSON.stringify(loginInfo)}); 
-        if (res.status == 200) { //successful account creation!
-            alert("Your account was successfully created. Please log in using your email and password to continue.");
-            this.setState({showAccountDialog: false});
-        } else { //Unsuccessful account creation
-          //Grab textual error message
-          const resText = await res.text();
-          alert(resText); //most likely the username is already taken
+            body: JSON.stringify(accountInfo)
+        }); 
+        if (res.status == 200) {
+            alert("Your account has been succesfully created! Please enter your username and password again to login to your new account.");
+            this.returnToLogin();
+        } 
+        else {
+            //Grab textual error message
+            const resText = await res.text();
+            alert(resText); //most likely the username is already taken
         }
     }
 
@@ -192,9 +194,16 @@ export default class LoginPage extends React.Component {
             createShow: true,
             loginShow: false
         });
+
+        this.createUsernameRef.current.value = this.userNameInputRef.current.value ? this.userNameInputRef.current.value : "";
+        this.createPasswordRef.current.value = "";
+        this.securityQuestionRef.current.value = "";
+        this.securityAnswerRef.current.value = "";
     }
 
     returnToLogin = () => {
+        this.userNameInputRef.current.value = "";
+        this.passwordInputRef.current.value = "";
         this.setState({
             createShow: false,
             loginShow: true
@@ -239,11 +248,11 @@ export default class LoginPage extends React.Component {
                     </div>
                     <div className={"login-form " + (this.state.createShow ? "" : "login-state")}>
                         <h1 className="form-heading">Create an Account</h1>
-                        <form id="createInterface" className="login-interface" onSubmit={this.handleLoginSubmit}>
+                        <form id="createInterface" className="login-interface" onSubmit={this.handleCreateAccount}>
                             <div className="input-text">
                                 <input className="form-control" placeholder="Enter Username"
                                     id="createUsernameInput"
-                                    ref={this.userNameInputRef} required={true} />
+                                    ref={this.createUsernameRef} required={true} />
                             </div>
                             <p />
                             <div className="input-text">
@@ -251,13 +260,13 @@ export default class LoginPage extends React.Component {
                             </div>
                             <p />
                             <div className="input-text">
-                                <input className="form-control" type="email" placeholder="Enter Security Question"
+                                <input className="form-control" placeholder="Enter Security Question"
                                     id="securityQuestion"
                                     ref={this.securityQuestionRef} required={true} />
                             </div>
                             <p />
                             <div className="input-text">
-                                <input className="form-control" type="email" placeholder="Enter Security Answer"
+                                <input className="form-control" placeholder="Enter Security Answer"
                                     id="securityAnswer"
                                     ref={this.securityAnswerRef} required={true} />
                             </div>

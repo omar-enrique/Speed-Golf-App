@@ -17,8 +17,8 @@ code {
 .navbar {
 	overflow: hidden; /* Don't allow scrolling */
 	display: block; /* Occupies its own horizontal space */
-	background-color: #13294E;
-	position: fixed; /* Doesn't move */
+	background-color: $primary-color;
+	position: fixed !important; /* Doesn't move */
 	top: 0;
 	width: 100%; /* 100% of width of screen */
 	align-content: center;
@@ -255,19 +255,6 @@ body {
 	a:visited, a:active {
 		color: white !important;
 	}
-}
-
-/* Login page styling */
-.login-text {
-	text-align: center;
-	width: 90%;
-	height: 10%;
-	font-size: 24px;
-}
-
-.login-btn {
-	width: 70%;
-	font-size: 36px;
 }
 
 /* Form styling */
