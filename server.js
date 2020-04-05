@@ -289,4 +289,100 @@ app.put('/users/:userId',  async (req, res, next) => {
 	}
 });
 
+app.post('/rounds/:userId', async (req, res, next) => {
+	console.log("in /rounds (POST) route with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
+	
+	if (!req.body.hasOwnProperty("date") || !req.body.hasOwnProperty("course") || !req.body.hasOwnProperty("type") || !req.body.hasOwnProperty("holes") ||
+		!req.body.hasOwnProperty("strokes") || !req.body.hasOwnProperty("minutes") || !req.body.hasOwnProperty("seconds") || !req.body.hasOwnProperty("notes")) {
+	
+		//Body does not contain correct properties
+		return res.status(400).send("POST request on /rounds formulated incorrectly." +
+			"Body must contain all 8 required fields: date, course, type, holes, strokes, " + "minutes, seconds, notes.");
+	}
+	
+	try {
+		let status = await User.update({id: req.params.userId}, {$push: {rounds: req.body}});
+
+		if (status.nModified != 1) { //Should never happen!
+			res.status(400).send("Unexpected error occurred when adding round to database. Round was not added.");
+		} else {
+			res.status(200).send("Round successfully added to database.");
+		}
+	
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send("Unexpected error occurred when adding round to database: " + err);
+	}
+});
+
+app.get('/rounds/:userId', async(req, res) => {
+	console.log("in /rounds route (GET) with userId = " + JSON.stringify(req.params.userId));
+	
+	try {
+		let thisUser = await User.findOne({id: req.params.userId});
+		if (!thisUser) {
+			return res.status(400).message("No user account with specified userId was found in database.");
+		} 
+		else {
+			return res.status(200).json(JSON.stringify(thisUser.rounds));
+		}
+	} catch (err) {
+		console.log()
+		return res.status(400).message("Unexpected error occurred when looking up user in database: " + err);
+	}
+});
+
+app.put('/rounds/:userId/:roundId', async (req, res, next) => {
+	console.log("in /rounds (PUT) route with params = " + 
+				JSON.stringify(req.params) + " and body = " + 
+				JSON.stringify(req.body));
+	const validProps = ['date', 'course', 'type', 'holes', 'strokes',
+	  'minutes', 'seconds', 'notes'];
+	let bodyObj = {...req.body};
+	for (const bodyProp in bodyObj) {
+		if (!validProps.includes(bodyProp)) {
+			return res.status(400).send("rounds/ PUT request formulated incorrectly." +
+			"Only the following props are allowed in body: " +
+			"'date', 'course', 'type', 'holes', 'strokes'" +
+			"'minutes', 'seconds', 'notes'");
+		} else {
+			bodyObj["rounds.$." + bodyProp] = bodyObj[bodyProp];
+			delete bodyObj[bodyProp];
+		}
+	}
+	try {
+		let status = await User.updateOne(
+			{"id": req.params.userId,
+			"rounds._id": mongoose.Types.ObjectId(req.params.roundId)}
+			,{"$set" : bodyObj}
+		);
+		if (status.nModified != 1) { //Should never happen!
+			res.status(400).send("Unexpected error occurred when updating round in database. Round was not updated.");
+		} else {
+			res.status(200).send("Round successfully updated in database.");
+		}
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send("Unexpected error occurred when updating round in database: " + err);
+	} 
+});
+
+app.delete('/rounds/:userId/:roundId', async (req, res, next) => {
+	console.log("in /rounds (DELETE) route with params = " + 
+				JSON.stringify(req.params)); 
+	try {
+		let status = await User.updateOne(
+			{id: req.params.userId},
+			{$pull: {rounds: {_id: mongoose.Types.ObjectId(req.params.roundId)}}});
+		if (status.nModified != 1) { //Should never happen!
+			res.status(400).send("Unexpected error occurred when deleting round from database. Round was not deleted.");
+		} else {
+			res.status(200).send("Round successfully deleted from database.");
+		}
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send("Unexpected error occurred when deleting round from database: " + err);
+	} 
+});
+
 app.listen(process.env.PORT || LOCAL_PORT);
