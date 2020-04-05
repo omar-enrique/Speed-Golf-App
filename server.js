@@ -43,8 +43,7 @@ const userSchema = new Schema({
 	provider: {type: String, required: true}, //strategy used to authenticate, e.g., github, local
 	profileImageUrl: {type: String, required: true}, //link to profile image
 	securityQuestion: String,
-	securityAnswser: {type: String, required:
-					() => this.securityQuestion ? true : false},
+	securityAnswer: {type: String, required: function() {return this.securityQuestion ? true: false}},
 	rounds: [roundSchema]
 });
 
@@ -112,33 +111,36 @@ passport.serializeUser((user, done) => {
 //to persistent storage.
 passport.deserializeUser(async (userId, done) => {
 	console.log("In deserializeUser.");
-
-	console.log("Contents of userId param: " + userId);
+	console.log("Contents of user param: " + userId);
 	let thisUser;
 	try {
 		thisUser = await User.findOne({id: userId});
-		console.log("User with id " + userId +
-		" found in DB. User object will be available in server routes as req.user.")
-		done(null,thisUser);
-		} catch (err) {
+		if (thisUser) {
+			console.log("User with id " + userId + " found in DB. User object will be available in server routes as req.user.")
+			done(null,thisUser);
+		} 
+		else {
+			done(new error("Error: Could not find user with id " + userId + " in DB, so user could not be deserialized to session."));
+		}
+	} 
+	catch (err) {
 		done(err);
 	}
 });
 
 const app = express();
-// app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use(session({secret: "speedgolf", resave: false, saveUninitialized: false, cookie: {maxAge: 1000 * 60}}))
 	.use(express.static(path.join(__dirname, 'client', 'build')))
 	.use(passport.initialize())
-	.use(passport.session());
+	.use(passport.session())
+	.use(express.json());
 
 app.get('/', function (req, res) {
 	res.sendFile(path.join(__dirname,'client', 'build', 'index.html'));
 });
 
-/////////////////////
-//EXPRESS APP ROUTES
-/////////////////////
+/* APP ROUTES */
+
 //AUTHENTICATE route: Uses passport to authenticate with GitHub.
 //Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
@@ -219,7 +221,7 @@ app.get('/users/:userId', async(req, res, next) => {
 	}
 });
 
-app.post('/users/:userid', async (req, res, next) => {
+app.post('/users/:userId', async (req, res, next) => {
 	console.log("in /users route (POST) with params = " + JSON.stringify(req.params) +
 		" and body = " + JSON.stringify(req.body));
 	
@@ -236,18 +238,22 @@ app.post('/users/:userid', async (req, res, next) => {
 				req.body.userId + "'. Please choose a different email.");
 		} 
 		else { //account available -- add to database
+			console.log('RECEIVED REQUEST BODY: ', req.params, req.body);
+
 			thisUser = await new User({
 				id: req.params.userId,
 				password: req.body.password,
-				displayName: req.params.userId,
-				authStrategy: 'local',
-				profileImageUrl: `https://www.gravatar.com/avatar/${md5(req.body.userId)}`,
-				securityQuestion: req.body.securityQuestion,
-				securityAnswer: req.body.securityAnswer,
+				username: req.params.userId,
+				provider: 'local',
+				profileImageUrl: "http://tiny.cc/sslogo",
+				securityQuestion: req.body.hasOwnProperty("securityQuestion") ? 
+					req.body.securityQuestion : "",
+				securityAnswer: req.body.hasOwnProperty("securityAnswer") ? 
+					req.body.securityAnswer : "",
 				rounds: []
 			}).save();
 		
-			return res.status(200).send("New account for '" + req.body.userId + "' successfully created.");
+			return res.status(200).send("New account for '" + req.params.userId + "' successfully created.");
 		}
 	} 
 	catch (err) {
@@ -267,7 +273,7 @@ app.put('/users/:userId',  async (req, res, next) => {
 		if (!validProps.includes(bodyProp)) {
 			return res.status(400).send("users/ PUT request formulated incorrectly." +
 			"Only the following props are allowed in body: " +
-			"'password', 'displayname', 'profileImageUrl', 'securityQuestion', 'securityAnswer'");
+			"'password', 'username', 'profileImageUrl', 'securityQuestion', 'securityAnswer'");
 		} 
 	}
 	try {
