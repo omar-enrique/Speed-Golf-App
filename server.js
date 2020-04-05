@@ -9,6 +9,8 @@ import passportGithub from 'passport-github';
 import mongoose from 'mongoose';
 
 const connectStr = 'mongodb+srv://admin:speedgolf12345@speedgolf-bmxxt.mongodb.net/test?retryWrites=true&w=majority';
+mongoose.set('useFindAndModify', false);
+
 const LOCAL_PORT = 8080;
 const DEPLOY_URL = "http://localhost:" + LOCAL_PORT;
 const LocalStrategy = passportLocal.Strategy;
