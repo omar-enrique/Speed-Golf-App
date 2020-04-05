@@ -16,7 +16,7 @@ export default class LoginPage extends React.Component {
             loginBtnIcon: "fa fa-sign-in",
             loginBtnLabel: "Log In",
             githubIcon: "fa fa-github",
-            githubLabel: "Sign in with GitHub",
+            githubLabel: "Login with Github",
             loginShow: true,
             createShow: false
         }
@@ -237,6 +237,11 @@ export default class LoginPage extends React.Component {
                                 onClick={() => this.handleOAuthLoginClick("github")}>
                                 <span className={this.state.githubIcon}></span>&nbsp;
                                 {this.state.githubLabel}
+                            </button>
+                            <button type="button" className="btn btn-facebook"
+                                onClick={() => this.handleOAuthLoginClick("facebook")}>
+                                <span className="fa fa-facebook"></span>&nbsp;
+                                Login with Facebook
                             </button>
                             <p>
                                 <i>Version CptS 489 Sp20</i>

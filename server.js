@@ -6,6 +6,7 @@ import session from 'express-session';
 import passport from 'passport';
 import passportLocal from 'passport-local';
 import passportGithub from 'passport-github';
+import passportFacebook from 'passport-facebook';
 import mongoose from 'mongoose';
 
 const connectStr = 'mongodb+srv://admin:speedgolf12345@speedgolf-bmxxt.mongodb.net/test?retryWrites=true&w=majority';
@@ -15,6 +16,7 @@ const LOCAL_PORT = 8080;
 const DEPLOY_URL = "http://localhost:" + LOCAL_PORT;
 const LocalStrategy = passportLocal.Strategy;
 const GithubStrategy = passportGithub.Strategy;
+const FacebookStrategy = passportFacebook.Strategy;
 const Schema = mongoose.Schema;
 
 mongoose.connect(connectStr, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -83,7 +85,7 @@ passport.use(new GithubStrategy({
 	},
 	async (accessToken, refreshToken, profile, done) => {
 		console.log("User authenticated through GitHub! In passport callback.");
-		
+
 		//Our convention is to build userId from username and provider
 		const userId = `${profile.username}@${profile.provider}`;
 		
@@ -94,6 +96,34 @@ passport.use(new GithubStrategy({
 				id: userId,
 				username: profile.username,
 				provider: profile.provider,
+				profileImageUrl: profile.photos[0].value
+			}).save();
+		}
+
+		return done(null,currentUser);
+	}
+));
+
+passport.use(new FacebookStrategy({
+		clientID: "1662774900548017",
+		clientSecret: "5719dc7709e241fdb559e097e8a9ebd4",
+		callbackURL: DEPLOY_URL + "/auth/facebook/callback",
+		profileFields: ['id', 'displayName', 'photos']
+	},
+	async (accessToken, refreshToken, profile, done) => {
+		console.log("User authenticated through Facebook! In passport callback.");
+		console.log('PROFILE', profile)
+			
+		//Our convention is to build userId from username and provider
+		const userId = `${profile.displayName}@facebook`;
+		
+		//See if document with this unique userId exists in database
+		let currentUser = await User.findOne({id: userId});
+		if (!currentUser) { //Add this user to the database
+			currentUser = await new User({
+				id: userId,
+				username: profile.displayName,
+				provider: 'facebook',
 				profileImageUrl: profile.photos[0].value
 			}).save();
 		}
@@ -143,20 +173,24 @@ app.get('/', function (req, res) {
 
 /* APP ROUTES */
 
-//AUTHENTICATE route: Uses passport to authenticate with GitHub.
-//Should be accessed when user clicks on 'Login with GitHub' button on
-//Log In page.
+// Redirect to Github for Authentication
 app.get('/auth/github', passport.authenticate('github'));
 
-//CALLBACK route: GitHub will call this route after the
-//OAuth authentication process is complete.
-//req.isAuthenticated() tells us whether authentication was successful.
+//Redirect to Facebook for Authentication
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+// Callback upon completion of third party Github authentication
 app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }),
 	(req, res) => {
 	console.log("auth/github/callback reached.")
 	res.redirect('/'); //sends user back to login screen;
 	//req.isAuthenticated() indicates status
 });
+
+// Callback upon completion of third party Facebook authentication
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/',
+                                      failureRedirect: '/' }));
 
 //LOGOUT route: Use passport's req.logout() method to log the user out and
 //redirect the user to the main app page. req.isAuthenticated() is toggled to false.
