@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 const connectStr = 'mongodb+srv://admin:speedgolf12345@speedgolf-bmxxt.mongodb.net/test?retryWrites=true&w=majority';
 mongoose.set('useFindAndModify', false);
 
-const DEPLOY_URL = "https://speed-golf-app.herokuapp.com";
+const DEPLOY_URL = "http://speedgolfapp-env.eba-feirnjig.us-east-1.elasticbeanstalk.com";
 const LocalStrategy = passportLocal.Strategy;
 const GithubStrategy = passportGithub.Strategy;
 const FacebookStrategy = passportFacebook.Strategy;
