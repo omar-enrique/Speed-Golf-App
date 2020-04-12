@@ -78,8 +78,8 @@ passport.use(new LocalStrategy({passReqToCallback: true},
 ));
 
 passport.use(new GithubStrategy({
-	clientID: "b115e16e399c7aaad8f3",
-	clientSecret: "71018c90217ffa7df801599c1904da98f7a78327",
+	clientID: "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	clientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	callbackURL: DEPLOY_URL + "/auth/github/callback"
 	},
 	async (accessToken, refreshToken, profile, done) => {
@@ -104,8 +104,8 @@ passport.use(new GithubStrategy({
 ));
 
 passport.use(new FacebookStrategy({
-		clientID: "1662774900548017",
-		clientSecret: "5719dc7709e241fdb559e097e8a9ebd4",
+		clientID: "xxxxxxxxxxxxxxxxxxxx",
+		clientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		callbackURL: DEPLOY_URL + "/auth/facebook/callback",
 		profileFields: ['id', 'displayName', 'photos']
 	},
